@@ -1,0 +1,17 @@
+LIVE CHAT SETUP — Dr. Tamer Fayez Dental Clinic
+
+The current website files are `index-livechat-natural.html` and `admin-livechat-configured.html`. Deploy these files as the public homepage and admin page after completing the backend setup below.
+
+1. In the correct Supabase project, run `supabase_livechat.sql` in SQL Editor.
+2. Configure Edge Function secrets:
+   - `CHAT_SECRET`: random secret with at least 32 characters.
+   - `TURNSTILE_SECRET_KEY`: private Turnstile secret matching the homepage site key.
+   - `ALLOWED_ORIGIN`: the exact origin shared by the public website and admin page, such as `https://example.com` (no trailing slash).
+   Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions automatically. Never put the service-role key or private secrets in HTML.
+3. From the project directory, deploy both endpoints with gateway JWT verification disabled. The functions validate visitor tokens and admin sessions themselves:
+   - `supabase functions deploy chat-visitor --no-verify-jwt`
+   - `supabase functions deploy chat-staff --no-verify-jwt`
+4. Publish `index-livechat-natural.html` as the public homepage and `admin-livechat-configured.html` as the admin page. The admin page uses the same Supabase project and `/functions/v1/chat-staff` endpoint.
+5. Test the visitor chat and admin inbox on the deployed website using two separate browsers. Verify visitor messages arrive in the inbox, staff replies appear in the visitor chat, and conversation status can be changed.
+
+For booking email and WhatsApp notifications, follow `SETUP_BOOKING_NOTIFICATIONS.md` separately. Booking notifications require their own database migration, Turnstile configuration, provider secrets, and `submit-booking` deployment.
